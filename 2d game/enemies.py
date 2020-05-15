@@ -1,5 +1,6 @@
 import pygame
 from pygame import *
+from projectiles import Projectiles
 
 Enem_sprite = pygame.image.load('Enemy.png')
 
@@ -17,8 +18,7 @@ class Enemies:
         self.not_removed = False
         self.hitbox = (self.x , self.y , self.w , self.h)
 
-    def Spawn(self  , rect_color):
-        #pygame.draw.rect(self.win , rect_color ,[self.x , self.y , self.w , self.h] )
+    def Spawn(self  ):
         self.win.blit(Enem_sprite , (self.x, self.y))
         self.hitbox = (self.x , self.y , self.w , self.h)
 
@@ -27,4 +27,9 @@ class Enemies:
 
     def get_hitbox(self):
         return self.hitbox
+
+    def fire(self , win  ,bullets = []  ):
+    
+        if len(bullets) < 4:  # This will make sure we cannot exceed 3 bullets on the screen at once
+            bullets.append(Projectiles(round(self.x+self.w/2),( self.y  ) ,win , 5))    
 

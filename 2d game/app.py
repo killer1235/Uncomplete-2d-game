@@ -1,7 +1,7 @@
 import pygame
 from time import sleep
 import random
-import time
+import time as tm
 from pygame import *
 from util import *
 from player import Player
@@ -53,6 +53,8 @@ class app:
         # Bullets list
         bullets = []
         enem_bullets = []
+
+        time0 = tm.time()
 
         # main game loop
         while isRunning:
@@ -126,47 +128,44 @@ class app:
                 bullet.draw()
 
             # Spawn The enemeis
-            #Enem.Spawn(black)
             for i in Enem:
-                i.Spawn(black)
+                i.Spawn()
                 i.move()
-                fire(self.window ,i , enem_bullets )
-                
 
-
+                if tm.time() - time0 > 1:  # Shoot once every 10 seconds
+                    time0 = tm.time()
+                    #fire(self.window ,i , enem_bullets )
+                    i.fire(self.window , enem_bullets)
                 
             # Move players and enemies    
             player.move()
 
             # Show fps
             show_fps(clock , self.window)
-            message_display(f"dodged: {dodged}" , 70 , 15 ,25, black , self.window)
+            message_display(f"dodged: {dodged}" , 70 , 15 ,25, white , self.window)
 
             hitbox = player.get_hitbox()
 
-
-
             draw_healthbar(self.window , player.x,(hitbox[1] + hitbox[3])+15 , health , 10)
-
-
-            for i in Enem:
-                z = 0
-                z =+ 1
-                if i.y > height:
-                    i.y = 0 - i.y
-                    i.x = Enems_pos[z]
-                    dodged += 1
 
             # check if player is out of bounds
             if player.x > width -  carw or player.x < 0:
                 self.Crash()
 
+            # bullet collision   
+            for enemy in Enem:     
+                z = 0
+                z =+ 1
+                if enemy.y > height:
+                    enemy.y = 0 - enemy.y
+                    enemy.x = Enems_pos[z]
+                    dodged += 1        
+                
+                # enemy hitbox
+                enem_hitbox = enemy.get_hitbox()
 
-            for i in Enem:
-                enem_hitbox = i.get_hitbox()
-
+                
                 collsion = self.detect_collisions(hitbox , enem_hitbox)
-
 
                 # player collsion 
                 if collsion:
@@ -175,28 +174,18 @@ class app:
                         self.Crash()
                     else:
 
-                        i.y = 0 - i.h
-                        i.x = random.randrange(0  , width)
-                        health -= 10
-
-            # bullet collision   
-            for enemy in Enem:
-
-                # bullet hitbox 
-                
-                # Enemy hitbox
-                enem_hitbox = None
-
-                
+                        enemy.y = 0 - enemy.h
+                        enemy.x = random.randrange(0  , width)
+                        health -= 10            
                 
                 for bullet in bullets:
-                    enem_hitbox = enemy.get_hitbox()
+                    
                     bullet_hitbox = bullet.get_hitbox()
-
-
 
                 # collision detection function
                     collsion_bullet = self.detect_collisions(bullet_hitbox ,  enem_hitbox )
+                    pl_col = self.detect_collisions(hitbox , bullet_hitbox)
+
                 
                     if collsion_bullet:
 
@@ -217,7 +206,7 @@ class app:
         self.window.blit(obj , (x ,y))
 
     def Crash(self):
-        message_display("crashed" , (width/2) , (height/2)  ,115, black , self.window)
+        message_display("crashed" , (width/2) , (height/2)  ,115, white , self.window)
 
         pygame.display.update()
 

@@ -37,6 +37,6 @@ def draw_healthbar(display ,  x, y , w , h):
         pygame.draw.rect(display , green ,[x , y , w , h])
 
 def show_fps(clock , win):
-    message_display(f'FPS : {str(int(clock.get_fps()))}' , 50 , 90 , 25 , black , win)   
+    message_display(f'FPS : {str(int(clock.get_fps()))}' , 50 , 90 , 25 , white , win)   
 
      
