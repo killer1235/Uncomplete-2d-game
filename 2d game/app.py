@@ -71,7 +71,7 @@ class app:
             for bullet in enem_bullets:
     
                 if bullet.y < -100:
-                    bullets.pop(bullets.index(bullet))
+                    enem_bullets.pop(bullets.index(bullet))
 
                 else :
                     bullet.y += bullet.vel               
@@ -132,9 +132,8 @@ class app:
                 i.Spawn()
                 i.move()
 
-                if tm.time() - time0 > 1:  # Shoot once every 10 seconds
+                if tm.time() - time0 > 3:  # Shoot once every 3 seconds
                     time0 = tm.time()
-                    #fire(self.window ,i , enem_bullets )
                     i.fire(self.window , enem_bullets)
                 
             # Move players and enemies    
@@ -142,28 +141,33 @@ class app:
 
             # Show fps
             show_fps(clock , self.window)
-            message_display(f"dodged: {dodged}" , 70 , 15 ,25, white , self.window)
+
+
+            #message_display(f"dodged: {dodged}" , 70 , 15 ,25, white , self.window)
 
             hitbox = player.get_hitbox()
 
+            # draw the player healthbar
             draw_healthbar(self.window , player.x,(hitbox[1] + hitbox[3])+15 , health , 10)
 
             # check if player is out of bounds
             if player.x > width -  carw or player.x < 0:
                 self.Crash()
 
+            for bullet in enem_bullets:
+                hit = bullet.get_hitbox()
+
+                pl_bullet_col = self.detect_collisions(hitbox , hit)
+
+                if pl_bullet_col:
+                    health -= 10
+                    enem_bullets.pop(enem_bullets.index(bullet))
+
             # bullet collision   
-            for enemy in Enem:     
-                z = 0
-                z =+ 1
-                if enemy.y > height:
-                    enemy.y = 0 - enemy.y
-                    enemy.x = Enems_pos[z]
-                    dodged += 1        
+            for enemy in Enem:      
                 
                 # enemy hitbox
                 enem_hitbox = enemy.get_hitbox()
-
                 
                 collsion = self.detect_collisions(hitbox , enem_hitbox)
 
